@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { isPlausibleEmail, normalizeEmail } from './email';
 import { normalizeName } from './profile';
-import { canManageGroup, keepsAnAdmin, normalizeRoles } from './roles';
+import { canManageGroup, isOrganizer, keepsAnAdmin, normalizeRoles, toggleRole } from './roles';
 
 describe('roles', () => {
   it('lets only admins manage the group', () => {
@@ -16,6 +16,19 @@ describe('roles', () => {
 
   it('drops unknown roles', () => {
     expect(normalizeRoles(['admin', 'king'])).toEqual(['admin']);
+    expect(normalizeRoles(['organizer', 'admin'])).toEqual(['admin', 'organizer']);
+  });
+
+  it('tells the organizer apart from the admin', () => {
+    expect(isOrganizer({ roles: ['organizer'] })).toBe(true);
+    expect(isOrganizer({ roles: ['admin'] })).toBe(false);
+    expect(canManageGroup({ roles: ['organizer'] })).toBe(false);
+  });
+
+  it('toggles one role and keeps the others', () => {
+    expect(toggleRole(['admin', 'organizer'], 'admin')).toEqual(['organizer']);
+    expect(toggleRole(['organizer'], 'admin')).toEqual(['admin', 'organizer']);
+    expect(toggleRole([], 'organizer')).toEqual(['organizer']);
   });
 });
 

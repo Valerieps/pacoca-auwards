@@ -17,7 +17,13 @@ conferidas pelo `src/security.test.ts`, que roda em todo build.
   `send_metrics: false`.
 - Segredos nunca vão para o código do cliente: tudo que está no bundle é público. O segredo do login
   Google, e qualquer chave de API, ficam só no Worker (`wrangler secret put`; localmente no `.dev.vars`).
-- <O `BOOTSTRAP.md` escreve aqui quais dados pessoais o app guarda e se algum é sensível.>
+- O app guarda, de cada membro, nome, e-mail e foto da conta Google, a lista de mídias com notas,
+  datas e justificativas, as indicações e os votos. Nada é sensível no sentido legal, mas votos e
+  indicações provisórias são segredo: o servidor só devolve o que a fase atual abre
+  (`spec/premiacao.md`), e ninguém, nem o Organizador, vê votos antes do fim da Fase 4. Não há
+  exportação.
+- O Pede pra Paçoca é chamado por um Service Binding, sem rota HTTP pública (ADR-009). Só volta a
+  lista do próprio membro que pediu.
 
 ## 2. Acesso e dados
 

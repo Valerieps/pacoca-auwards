@@ -1,14 +1,14 @@
 // Every user-facing text, in Brazilian Portuguese, in the app's voice (docs/GLOSSARIO.md has the
 // terms). The UI imports from here; it never writes its own text.
 export const strings = {
-  appName: 'Nome do app',
+  appName: 'Paçoca AUwards',
   genericError: 'Algo deu errado. Tenta de novo?',
   retry: 'Tentar de novo',
   forbidden: 'Você não tem permissão para isso.',
   offline: 'Sem conexão. Mostrando o último estado carregado.',
 
   signIn: {
-    tagline: 'Uma frase sobre o que o app faz.',
+    tagline: 'O que eu assisti no ano, minhas indicações e a premiação do grupo.',
     button: 'Entrar com Google',
     noInvite: 'Não há convite para esse e-mail. Peça a um admin para te convidar.',
     failed: 'O login não deu certo. Tenta de novo?',
@@ -51,8 +51,10 @@ export const strings = {
     title: 'Membros',
     you: '(você)',
     admin: 'Admin',
-    member: 'Membro',
+    member: 'Participante',
+    organizer: 'Organizador',
     makeAdmin: 'Admin',
+    makeOrganizer: 'Organizador',
     rolesOf: (name: string) => `Papéis de ${name}`,
     lastAdmin: 'O grupo precisa de pelo menos um admin. Dê o papel a outra pessoa antes.',
     remove: 'Remover',
