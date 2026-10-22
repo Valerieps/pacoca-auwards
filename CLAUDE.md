@@ -23,7 +23,8 @@ The owner edits docs between messages: re-read a doc before editing it and prese
 Hard rules from `docs/SEGURANCA.md`, valid for every change:
 - The app talks only to its own origin (the Worker) and the origins in `network-policy.ts`; secrets (the Google client secret, any API key) live only in the Worker, never in the bundle.
 - The app never reaches the database: every read and write goes through the API, which checks the session and the role on the server.
-- Only invited e-mails get in; Google is the only sign-in (the test sign-in of ADR-007 exists only on localhost).
+- Only invited e-mails, or members of Pede pra Paçoca (ADR-009), get in; Google is the only sign-in (the test sign-in of ADR-007 exists only on localhost).
+- Provisional nominations and votes never leave the server before the award phase opens them (`docs/spec/premiacao.md`).
 - Never insert user text as HTML; links open with `target="_blank" rel="noopener noreferrer"`.
 - Minimize dependencies; pin exact versions; bundle them, never load from a CDN.
 - `network-policy.ts` is the only place that says which servers the app and the Worker may talk to.

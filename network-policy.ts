@@ -7,8 +7,16 @@
  */
 export const ALLOWED_ORIGINS: readonly string[] = [];
 
-/** Where images may load from (CSP `img-src`): Google profile photos (ADR-006). */
-export const IMAGE_ORIGINS: readonly string[] = ['https://lh3.googleusercontent.com'];
+/** Where images may load from (CSP `img-src`): Google profile photos (ADR-006), TMDB posters (ADR-008). */
+export const IMAGE_ORIGINS: readonly string[] = ['https://lh3.googleusercontent.com', 'https://image.tmdb.org'];
 
-/** The only servers the Worker (server/) calls: Google sign-in. Add an API here with an ADR. */
-export const SERVER_ORIGINS: readonly string[] = ['https://accounts.google.com', 'https://oauth2.googleapis.com'];
+/**
+ * The only servers the Worker (server/) calls: Google sign-in and the TMDB API (ADR-008). Add an
+ * API here with an ADR. The Pede pra Paçoca Worker is reached by a Service Binding, not by a URL
+ * (ADR-009), so it has no origin here.
+ */
+export const SERVER_ORIGINS: readonly string[] = [
+  'https://accounts.google.com',
+  'https://oauth2.googleapis.com',
+  'https://api.themoviedb.org',
+];

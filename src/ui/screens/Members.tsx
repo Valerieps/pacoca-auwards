@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ApiError, MeView, MemberListItem } from '../../application/api-contract';
-import { canManageGroup, isAdmin } from '../../domain/group/roles';
+import { canManageGroup, isAdmin, isOrganizer, toggleRole, type Role } from '../../domain/group/roles';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
 import { useQuery } from '../use-query';
@@ -11,6 +11,11 @@ function errorText(error: ApiError): string {
   return strings.genericError;
 }
 
+function roleLabel(member: MemberListItem): string {
+  const labels = [isAdmin(member) && strings.members.admin, isOrganizer(member) && strings.members.organizer].filter(Boolean);
+  return labels.length ? labels.join(' · ') : strings.members.member;
+}
+
 export function Members({ me }: { me: MeView }) {
   const { backend } = useServices();
   const members = useQuery('members', {}, ['members']);
@@ -18,9 +23,9 @@ export function Members({ me }: { me: MeView }) {
   const [busy, setBusy] = useState<string | null>(null);
   const manages = canManageGroup(me);
 
-  async function toggleAdmin(member: MemberListItem) {
+  async function toggle(member: MemberListItem, role: Role) {
     setBusy(member.id);
-    const result = await backend.command('member.setRoles', { memberId: member.id, roles: isAdmin(member) ? [] : ['admin'] });
+    const result = await backend.command('member.setRoles', { memberId: member.id, roles: toggleRole(member.roles, role) });
     setBusy(null);
     setError(result.ok ? null : errorText(result.error));
   }
@@ -50,7 +55,7 @@ export function Members({ me }: { me: MeView }) {
             <span className="grow">
               {member.name} {member.id === me.id && <span className="muted">{strings.members.you}</span>}
               <br />
-              <span className="muted">{isAdmin(member) ? strings.members.admin : strings.members.member}</span>
+              <span className="muted">{roleLabel(member)}</span>
               {member.email && (
                 <>
                   <br />
@@ -65,9 +70,18 @@ export function Members({ me }: { me: MeView }) {
                   className="secondary"
                   aria-pressed={isAdmin(member)}
                   disabled={busy === member.id}
-                  onClick={() => void toggleAdmin(member)}
+                  onClick={() => void toggle(member, 'admin')}
                 >
                   {strings.members.makeAdmin}
+                </button>
+                <button
+                  type="button"
+                  className="secondary"
+                  aria-pressed={isOrganizer(member)}
+                  disabled={busy === member.id}
+                  onClick={() => void toggle(member, 'organizer')}
+                >
+                  {strings.members.makeOrganizer}
                 </button>
                 {member.id !== me.id && (
                   <button

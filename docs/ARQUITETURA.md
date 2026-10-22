@@ -13,6 +13,10 @@ O desenho técnico que o código não mostra sozinho.
 - **Servidor:** um Cloudflare Worker serve os arquivos do app, a API em `/api`, a conexão ao vivo e
   o cron. Todos os dados do grupo ficam num único Durable Object, `Group`, com SQLite. Ver ADR-004.
 - **Login:** Google, pelo fluxo de código OAuth no Worker, com cookie de sessão. Ver ADR-005.
+- **TMDB:** o Worker busca mídias, datas e temporadas na API do TMDB; os pôsteres carregam direto de
+  `image.tmdb.org`. Ver ADR-008.
+- **Pede pra Paçoca:** o Worker chama o Worker do Pede pra Paçoca por um Service Binding
+  (`isMember`, `watchedBy`), sem rota pública. Ver ADR-009.
 
 ```
 app (celular) ──POST /api/query|command──► Worker ──RPC──► Group (Durable Object, SQLite)
@@ -44,6 +48,11 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
   causa entra junto ou não entra.
 - Papéis são conferidos no servidor, nunca só na interface.
 - Sempre existe pelo menos um admin.
+- O que um membro lê depende da fase: o servidor filtra cada consulta pela fase atual da edição
+  (indicações provisórias e votos de outros nunca saem do servidor antes da hora).
+- Um item é identificado por `media_type` + `tmdb_id` + temporada; nunca pelo título.
+- Trazer do Pede pra Paçoca nunca sobrescreve o que o membro editou (`watched_at_edited`,
+  `rating_edited`) nem desarquiva.
 - A sessão vale só enquanto o membro está ativo. Remover alguém apaga as sessões dele e fecha os
   WebSockets abertos (o comando devolve `disconnect`), então o acesso acaba na hora.
 - Um comando devolve os tópicos (`Topic`) que mudou; o `Group` avisa todos os apps abertos, que
@@ -56,11 +65,19 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 | `members` | `id`, `google_sub`, `email`, `name`, `photo_url`, `roles` (JSON), `active` | Removido fica com `active = 0`; um convite novo traz o mesmo membro de volta |
 | `sessions` | `token_hash`, `member_id`, `expires_at` | Só o SHA-256 do token; o cron apaga as vencidas |
 | `invites` | `email`, `invited_by`, `state` (`pending`, `accepted`, `revoked`) | Um por e-mail |
+| `media` | `media_type`, `tmdb_id`, `season`, `title`, `poster_path`, `release_date`, `release_date_manual` | Cópia do que veio do TMDB; chave única nos três primeiros. Desenho, ainda sem migração |
+| `list_items` | `member_id`, `media_id`, `state`, `rating`, `rating_edited`, `watched_at`, `watched_at_edited`, `from_pede`, `archived`, `wants_to_nominate`, `justification` | Um por membro e mídia. Desenho, ainda sem migração |
+| `pede_imports` | `member_id`, `last_at` | A última vez que o membro trouxe do Pede pra Paçoca. Desenho |
+| `editions` | `year`, `name`, `phase`, `phase_ends_at` (JSON, por fase) | Uma por ano; o cron troca a fase. Desenho |
 
 ## Fluxo de eventos
 
-<Se o app tem histórico de eventos (um feed, transições de estado): quais tipos existem, quem grava,
-quem lê. Todo evento é gravado na mesma transação do comando que o causa.>
+- **Troca de fase:** o cron (`GroupService.tick`) vê que a data de fim da fase passou, no horário
+  de Brasília, e avança a edição numa transação. Na mesma transação faz o que a troca pede: no fim
+  da Fase 2 registra as indicações de quem não registrou; no fim da Fase 4 torna oficiais os votos
+  provisórios. Depois avisa os apps abertos.
+- O feed da camada social, quando existir, lê esses eventos; cada um é gravado na transação do
+  comando que o causa.
 
 ## Migrações
 
