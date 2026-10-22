@@ -76,8 +76,8 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
   de Brasília, e avança a edição numa transação. Na mesma transação faz o que a troca pede: no fim
   da Fase 2 registra as indicações de quem não registrou; no fim da Fase 4 torna oficiais os votos
   provisórios. Depois avisa os apps abertos.
-- O feed da camada social, quando existir, lê esses eventos; cada um é gravado na transação do
-  comando que o causa.
+- Os avisos da edição (camada social), quando existirem, leem esses eventos; cada um é gravado na
+  transação do comando que o causa.
 
 ## Migrações
 

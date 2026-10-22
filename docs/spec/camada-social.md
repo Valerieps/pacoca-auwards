@@ -2,19 +2,22 @@
 
 O que mantém o grupo engajado o ano todo, sem nunca revelar em quem cada pessoa votou.
 
-- **Entra aqui:** feed, reações e comentários, mural da categoria, progresso do grupo, conquistas,
+- **Entra aqui:** avisos da edição, reações e comentários, mural da categoria, progresso do grupo, conquistas,
   termômetro de votação, lembretes e notificações.
 - **Não entra aqui:** as regras de cada fase da premiação (`premiacao.md`).
 
 ## Em aberto
 
-- [ ] Como o feed e o progresso do grupo convivem com a Fase 1, em que ninguém vê a lista de
-  ninguém? Eles só começam na Fase 3?
+- [ ] Que nome dar aos avisos da edição (o antigo feed)? Opções: "Avisos", "Quadro de avisos",
+  "Diário da edição", "Bastidores".
 
 ## Recursos
 
-- **Feed da edição:** mídias indicadas, categorias reveladas, indicações com justificativa,
-  watchlists concluídas e trocas de fase. *(4)*
+- Na Fase 1 não há interação: os avisos da edição ficam vazios e o progresso do grupo não aparece.
+  Tudo da camada social começa na Fase 2. *(4)*
+- **Avisos da edição:** não é uma rede social, só um quadro de avisos: trocas de fase, categorias
+  reveladas e o que cada pessoa concluiu, como "Fulano acabou de registrar os seus votos pra
+  valer". Nunca mostra o conteúdo de uma lista, indicação ou voto antes da fase que o abre. *(4)*
 - **Reações e comentários:** curtir, reagir (inclusive com uma "pata da Paçoca") e comentar
   indicações e justificativas. *(4)*
 - **Mural da categoria:** espaço de debate em cada categoria. Campanha aberta é permitida. *(4)*
@@ -29,8 +32,8 @@ O que mantém o grupo engajado o ano todo, sem nunca revelar em quem cada pessoa
 
 ## Privacidade
 
-- Em quem cada pessoa votou nunca aparece no feed, no mural nem no progresso. *(4)*
-- Categorias privadas não geram nada no feed até serem reveladas. *(4)*
+- Em quem cada pessoa votou nunca aparece nos avisos, no mural nem no progresso. *(4)*
+- Categorias privadas não geram nada nos avisos até serem reveladas. *(4)*
 - O Cesar pode apagar comentários e ocultar posts do mural. *(4)*
 - Cada pessoa escolhe quais notificações recebe e se aparece no progresso do grupo. *(4)*
 

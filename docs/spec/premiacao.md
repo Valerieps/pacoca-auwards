@@ -5,20 +5,13 @@ anuncia os vencedores.
 
 - **Entra aqui:** a edição, o calendário e as quatro fases, as indicações pra valer, as categorias,
   a votação, a apuração e o anúncio.
-- **Não entra aqui:** a minha lista e a indicação provisória (`minha-lista.md`), o feed, o mural e
+- **Não entra aqui:** a minha lista e a indicação provisória (`minha-lista.md`), os avisos da edição, o mural e
   as notificações (`camada-social.md`), os papéis (`acesso-e-membros.md`).
 
 ## Em aberto
 
-- [ ] Na Fase 1, existe uma lista de "pré-indicados" que todos veem e podem pôr na watchlist, e que
-  só o Cesar edita? Ou as pré-indicações do Cesar ficam escondidas como as de todo mundo até a Fase 2?
-- [ ] Categorias de "piores": a indicação provisória não tem sentido (positiva ou negativa). Como uma
-  mídia chega a uma categoria de piores? Só pelo Cesar ou pela sugestão de categoria na Fase 3?
-- [ ] Uma categoria "privada" na Fase 3 é a antiga categoria secreta (o Cesar escolhe sozinho as
-  mídias e o vencedor, ninguém vota, revelada só no anúncio)? Ou ela só fica escondida até a Fase 4
-  e o grupo vota nela?
-- [ ] No anúncio, as justificativas de voto aparecem com o nome de quem votou ou anônimas? Com o
-  nome, revelam em quem cada pessoa votou.
+- [ ] Uma categoria privada revelada só no anúncio não teve votação, porque ninguém a via na Fase 4.
+  Nesse caso o Cesar escolhe o vencedor sozinho? Ou o grupo vota nela às cegas, sem saber o nome?
 - [ ] A revelação dos vencedores é ao vivo, com todos comentando juntos, ou assíncrona?
 
 ## A edição e o calendário
@@ -44,6 +37,8 @@ anuncia os vencedores.
   provisórias (`minha-lista.md`). *(1)*
 - O Cesar também é participante: ele usa a lista e marca indicações provisórias como todo mundo. *(1)*
 - Ninguém vê nada da lista de ninguém, nem o Cesar. *(1)*
+- Não existe lista de pré-indicados: as indicações provisórias do Cesar ficam escondidas como as de
+  todo mundo até a Fase 3. *(1)*
 
 ## Fase 2: Registro de indicações
 
@@ -64,6 +59,12 @@ anuncia os vencedores.
   ela. O Cesar revisa e aprova, ajusta ou recusa. *(2)*
 - O Cesar cria categorias e vincula mídias a elas. Para cada categoria ele escolhe o que o grupo
   vê: só o nome, o nome com as mídias vinculadas, ou nada (privada). *(2)*
+- Numa categoria privada, só o Cesar escolhe as mídias: ninguém sugere mídias para ela, porque
+  ninguém a vê. *(2)*
+- O Cesar revela uma categoria privada no começo da Fase 4, e aí o grupo vota nela como nas outras,
+  ou só no anúncio. *(3)*
+- Uma mídia chega a uma categoria de piores como a qualquer outra: pelas indicações, inclusive as
+  provisórias pensadas para um "pior" (`minha-lista.md`). *(2)*
 - Uma categoria tem nome, descrição opcional, sentido (melhor ou pior) e tom (séria ou
   brincadeira). *(2)*
 
@@ -88,6 +89,7 @@ anuncia os vencedores.
 - O app não calcula vencedor: o Cesar escolhe o vencedor de cada categoria, se quiser menções
   honrosas, e escreve um comentário para o anúncio. *(3)*
 - O Cesar revela os vencedores todos de uma vez ou um por um, como numa cerimônia. *(3)*
-- No anúncio, as justificativas de voto ficam públicas. *(3)*
+- No anúncio, as justificativas de voto ficam públicas com o nome de quem votou: todos passam a ver
+  em quem cada pessoa votou. *(3)*
 - Depois do anúncio, a edição fica arquivada para consulta: categorias, vencedores, comentários do
   Cesar e justificativas. *(3)*

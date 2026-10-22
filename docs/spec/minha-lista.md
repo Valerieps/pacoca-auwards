@@ -8,11 +8,6 @@ o ano inteiro, com ou sem premiação acontecendo.
 - **Não entra aqui:** trazer do Pede pra Paçoca (`trazer-do-pede.md`), registrar indicações e tudo
   o que acontece nas fases 2 a 4 (`premiacao.md`).
 
-## Em aberto
-
-- [ ] Na watchlist, o filtro "apenas lançados este ano" mostra ou esconde um item sem data de
-  lançamento?
-
 ## A lista
 
 - A minha lista é só minha. Na Fase 1 da premiação ninguém vê nada dela, nem o Cesar. *(1)*
@@ -56,7 +51,8 @@ Cada item guarda duas datas.
 ## Filtros
 
 - A lista de assistidos abre com o filtro "apenas vistos este ano" ligado. *(1)*
-- A watchlist abre com o filtro "apenas lançados este ano" ligado. *(1)*
+- A watchlist abre com o filtro "apenas lançados este ano" ligado. Ele esconde os itens sem data de
+  lançamento. *(1)*
 - Eu posso desligar esses filtros e filtrar por data (assisti em, lançado em), tipo (filme ou
   série), estado, nota e "veio do Pede pra Paçoca". *(1)*
 
@@ -72,6 +68,8 @@ Cada item guarda duas datas.
   quê. Não escolho categoria: eu quero que a mídia ganhe alguma coisa, mas posso ainda não saber o
   quê. *(1)*
   Por quê: assim que eu assisto, já registro a minha percepção, sem esperar a premiação.
+- Eu também indico para os prêmios de pior: vejo o filme e penso "pior atuação da atriz X". A
+  justificativa guarda essa ideia. *(1)*
 - A indicação provisória é só minha: ninguém vê, nem o Cesar. *(1)*
 - Eu marco e desmarco à vontade até registrar as minhas indicações na Fase 2 (`premiacao.md`). *(1)*
 - Existe uma tela com todas as minhas indicações provisórias. *(1)*
