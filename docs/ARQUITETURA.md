@@ -17,6 +17,9 @@ O desenho técnico que o código não mostra sozinho.
   `image.tmdb.org`. Ver ADR-008.
 - **Pede pra Paçoca:** o Worker chama o Worker do Pede pra Paçoca por um Service Binding
   (`isMember`, `watchedBy`), sem rota pública. Ver ADR-009.
+- **Chamadas a outros servidores:** quem chama o TMDB e o Pede pra Paçoca é o Worker, nunca o
+  `Group`; as consultas `catalog.*` e `pede.status` não passam pelo objeto, a não ser para conferir
+  a sessão. Ver ADR-010.
 
 ```
 app (celular) ──POST /api/query|command──► Worker ──RPC──► Group (Durable Object, SQLite)
@@ -35,7 +38,8 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 - `src/application/api-contract.ts`: os nomes, entradas e saídas das consultas e dos comandos. É só
   tipo; o servidor importa com `import type`.
 - `server/application/`: os casos de uso do servidor. Síncronos, dependem só das portas `Sql`,
-  `Clock` e `IdGenerator`; os testes rodam sobre `node:sqlite`.
+  `Clock` e `IdGenerator`; os testes rodam sobre `node:sqlite`. A exceção são as consultas do
+  Worker (`worker-queries.ts`), assíncronas, sobre as portas `Catalog` e `PedePraPacoca`.
 - `server/infrastructure/` e `server/entry/`: Cloudflare, Google, cookies. Finos.
 - A interface chama `Backend` e `LiveUpdates` (portas em `src/application/ports.ts`), nunca a rede
   direto.
@@ -68,14 +72,15 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 | `media` | `media_type`, `tmdb_id`, `season`, `title`, `poster_path`, `release_date`, `release_date_manual` | Cópia do que veio do TMDB; chave única nos três primeiros. Desenho, ainda sem migração |
 | `list_items` | `member_id`, `media_id`, `state`, `rating`, `rating_edited`, `watched_at`, `watched_at_edited`, `from_pede`, `archived`, `wants_to_nominate`, `justification` | Um por membro e mídia. Desenho, ainda sem migração |
 | `pede_imports` | `member_id`, `last_at` | A última vez que o membro trouxe do Pede pra Paçoca. Desenho |
-| `editions` | `year`, `name`, `phase`, `phase_ends_at` (JSON, por fase) | Uma por ano; o cron troca a fase. Desenho |
+| `editions` | `year`, `name`, `phase`, `phase_ends_at` (JSON, por fase, instantes UTC) | Uma por ano; a de 2026 nasce na migração 2, na Fase 1. A edição atual é a do maior ano; o cron troca a fase |
 
 ## Fluxo de eventos
 
 - **Troca de fase:** o cron (`GroupService.tick`) vê que a data de fim da fase passou, no horário
   de Brasília, e avança a edição numa transação. Na mesma transação faz o que a troca pede: no fim
   da Fase 2 registra as indicações de quem não registrou; no fim da Fase 4 torna oficiais os votos
-  provisórios. Depois avisa os apps abertos.
+  provisórios. Depois avisa os apps abertos. Se o cron ficou parado e várias datas passaram, a
+  edição avança todas de uma vez (`advancePhase`).
 - Os avisos da edição (camada social), quando existirem, leem esses eventos; cada um é gravado na
   transação do comando que o causa.
 

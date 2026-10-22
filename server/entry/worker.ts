@@ -2,6 +2,7 @@
 // (ADR-004). Everything about the group is delegated to the Group Durable Object.
 import type { ApiError, ApiResult } from '../../src/application/api-contract';
 import { SESSION_DAYS, type GoogleProfile } from '../application/members';
+import { isWorkerQuery, runWorkerQuery, type WorkerPorts } from '../application/worker-queries';
 import { clearCookie, LOGIN_COOKIE, readCookie, SESSION_COOKIE, setCookie } from '../infrastructure/cookies';
 import { randomToken, sha256 } from '../infrastructure/crypto';
 import { devProfile, devSignInAllowed } from '../infrastructure/dev-sign-in';
@@ -13,6 +14,8 @@ import {
   newPendingLogin,
   profileFromIdToken,
 } from '../infrastructure/google-oauth';
+import { pedeFromBinding } from '../infrastructure/pede';
+import { tmdbCatalog } from '../infrastructure/tmdb';
 import type { Env } from './env';
 import { Group, SESSION_HASH_HEADER } from './group-object';
 
@@ -48,6 +51,16 @@ function group(env: Env) {
   return env.GROUP.get(env.GROUP.idFromName('grupo'));
 }
 
+function ports(env: Env): WorkerPorts {
+  return { catalog: env.TMDB_API_KEY ? tmdbCatalog(env.TMDB_API_KEY) : null, pede: pedeFromBinding(env.PEDE) };
+}
+
+/** Whether Pede pra Paçoca knows the e-mail; false when it is not set up or does not answer. */
+async function inPede(env: Env, email: string): Promise<boolean> {
+  const pede = pedeFromBinding(env.PEDE);
+  return pede ? pede.isMember(email).catch(() => false) : false;
+}
+
 async function sessionHash(request: Request): Promise<string | null> {
   const token = readCookie(request.headers.get('Cookie'), SESSION_COOKIE);
   return token ? sha256(token) : null;
@@ -64,11 +77,16 @@ async function login(env: Env, url: URL): Promise<Response> {
   return redirect(target, [setCookie(LOGIN_COOKIE, encodePendingLogin(pending), 600)]);
 }
 
-/** Signs the profile in through the invite rules; the session cookie, or null without invite. */
+/**
+ * Signs the profile in through the invite rules; the session cookie, or null without invite.
+ * Pede pra Paçoca is asked only when the invite rules say no (ADR-009).
+ */
 async function startSession(env: Env, profile: GoogleProfile): Promise<string | null> {
   const token = randomToken();
+  const hash = await sha256(token);
   const bootstrap = (env.BOOTSTRAP_ADMIN_EMAILS ?? '').split(',').filter(Boolean);
-  const result = await group(env).signIn(profile, await sha256(token), bootstrap);
+  let result = await group(env).signIn(profile, hash, bootstrap, false);
+  if (!result.ok && (await inPede(env, profile.email))) result = await group(env).signIn(profile, hash, bootstrap, true);
   return result.ok ? setCookie(SESSION_COOKIE, token, SESSION_DAYS * 24 * 60 * 60) : null;
 }
 
@@ -138,6 +156,12 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
     return json({ error: 'invalid' }, 400);
   }
   const [, kind, name] = match;
+  if (kind === 'query' && isWorkerQuery(name)) {
+    const email = await group(env).sessionEmail(hash);
+    if (!email) return json({ error: 'unauthenticated' }, 401);
+    const result = await runWorkerQuery(ports(env), { email }, name, input);
+    return result.ok ? json({ value: result.value }) : json({ error: result.error }, STATUS[result.error]);
+  }
   // RPC wraps results in a Disposable, which hides the union from narrowing; restore it.
   const result = (kind === 'query' ? await group(env).query(hash, name, input) : await group(env).command(hash, name, input)) as ApiResult<unknown>;
   return result.ok ? json({ value: result.value }) : json({ error: result.error }, STATUS[result.error]);

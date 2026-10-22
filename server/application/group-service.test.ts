@@ -56,6 +56,22 @@ describe('sign-in', () => {
   });
 });
 
+describe('sign-in through Pede pra Paçoca', () => {
+  it('lets someone new in as a participant, without an invite', () => {
+    signInAdmin();
+    expect(service.signIn(profile('pedro@example.com'), 'h-pedro', [], true)).toMatchObject({ ok: true });
+    expect(service.query('h-pedro', 'me', {})).toMatchObject({ ok: true, value: { roles: [] } });
+  });
+
+  it('does not bring back a member an admin removed', () => {
+    const admin = signInAdmin();
+    service.signIn(profile('pedro@example.com'), 'h-pedro', [], true);
+    const pedroId = service.memberForSession('h-pedro')!.id;
+    service.command(admin, 'member.remove', { memberId: pedroId });
+    expect(service.signIn(profile('pedro@example.com'), 'h-pedro-2', [], true)).toEqual({ ok: false, error: 'no_invite' });
+  });
+});
+
 describe('invites', () => {
   it('are for admins only', () => {
     const admin = signInAdmin();
@@ -133,5 +149,68 @@ describe('the API surface', () => {
     const admin = signInAdmin();
     expect(service.query(admin, 'toString', {})).toEqual({ ok: false, error: 'not_found' });
     expect(service.command(admin, 'constructor', {})).toEqual({ ok: false, error: 'not_found' });
+  });
+});
+
+describe('the edition', () => {
+  /** Ana, admin, gives herself the Organizador role. */
+  function organizer(admin = signInAdmin()): string {
+    const anaId = service.memberForSession(admin)!.id;
+    service.command(admin, 'member.setRoles', { memberId: anaId, roles: ['admin', 'organizer'] });
+    return admin;
+  }
+
+  it('is born as 2026, in Fase 1, with no end dates', () => {
+    const admin = signInAdmin();
+    expect(service.query(admin, 'edition', {})).toEqual({
+      ok: true,
+      value: { year: 2026, name: 'Paçoca AUwards 2026', phase: 'collection', endsAt: {} },
+    });
+  });
+
+  it('gets its calendar from the Organizador only, in Brasília time', () => {
+    const admin = signInAdmin();
+    expect(service.command(admin, 'edition.setCalendar', { endsAt: { collection: '2026-12-01T20:00' } })).toEqual({
+      ok: false,
+      error: 'forbidden',
+    });
+    const cesar = organizer(admin);
+    expect(service.command(cesar, 'edition.setCalendar', { endsAt: { collection: '2026-12-01T20:00', voting: '2027-01-10T20:00' } })).toMatchObject({
+      ok: true,
+      changed: ['edition'],
+      value: { endsAt: { collection: '2026-12-01T23:00:00.000Z', voting: '2027-01-10T23:00:00.000Z' } },
+    });
+  });
+
+  it('refuses ends in the past, out of order or not a time', () => {
+    const cesar = organizer();
+    const set = (endsAt: object) => service.command(cesar, 'edition.setCalendar', { endsAt });
+    expect(set({ collection: '2026-10-01T20:00' })).toEqual({ ok: false, error: 'invalid' });
+    expect(set({ collection: '2026-12-01T20:00', registration: '2026-11-30T20:00' })).toEqual({ ok: false, error: 'invalid' });
+    expect(set({ collection: 'amanha' })).toEqual({ ok: false, error: 'invalid' });
+    expect(service.command(cesar, 'edition.setCalendar', {})).toEqual({ ok: false, error: 'invalid' });
+  });
+
+  it('moves to the next phase when the cron sees the end has passed', () => {
+    const cesar = organizer();
+    service.command(cesar, 'edition.setCalendar', { endsAt: { collection: '2026-12-01T20:00' } });
+    clock.set('2026-12-01T22:59:00Z');
+    expect(service.tick()).toEqual([]);
+    clock.set('2026-12-01T23:00:00Z');
+    expect(service.tick()).toEqual(['edition']);
+    expect(service.query(cesar, 'edition', {})).toMatchObject({ ok: true, value: { phase: 'registration' } });
+    expect(service.tick()).toEqual([]);
+  });
+
+  it('keeps the end of a phase that already ended', () => {
+    const cesar = organizer();
+    service.command(cesar, 'edition.setCalendar', { endsAt: { collection: '2026-12-01T20:00' } });
+    clock.set('2026-12-02T00:00:00Z');
+    service.tick();
+    const result = service.command(cesar, 'edition.setCalendar', { endsAt: { collection: '2027-01-01T20:00', registration: '2026-12-20T20:00' } });
+    expect(result).toMatchObject({
+      ok: true,
+      value: { endsAt: { collection: '2026-12-01T23:00:00.000Z', registration: '2026-12-20T23:00:00.000Z' } },
+    });
   });
 });

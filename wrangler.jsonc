@@ -34,6 +34,9 @@
       "bindings": [{ "name": "GROUP", "class_name": "Group" }]
     }
   },
+  // Pede pra Paçoca (ADR-009). Turn on once its Worker exposes the read-only entrypoint; until then
+  // the app hides the import and the sign-in by Pede. Use the names from that repository:
+  // "services": [{ "binding": "PEDE", "service": "<pede-worker-name>", "entrypoint": "<EntrypointClass>" }],
   "observability": { "enabled": true },
   // No Wrangler usage telemetry from builds or CI (docs/SEGURANCA.md).
   "send_metrics": false

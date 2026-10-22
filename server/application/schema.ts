@@ -32,6 +32,16 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       revoked_at TEXT
     )`,
   ],
+  // 2: the award's editions, one a year; the app is born with 2026 in Fase 1 (docs/spec/premiacao.md).
+  [
+    `CREATE TABLE editions (
+      year INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      phase TEXT NOT NULL,
+      phase_ends_at TEXT NOT NULL DEFAULT '{}'
+    )`,
+    `INSERT INTO editions (year, name, phase) VALUES (2026, 'Paçoca AUwards 2026', 'collection')`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

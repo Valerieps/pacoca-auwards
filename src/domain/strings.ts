@@ -1,5 +1,10 @@
 // Every user-facing text, in Brazilian Portuguese, in the app's voice (docs/GLOSSARIO.md has the
 // terms). The UI imports from here; it never writes its own text.
+import type { TimeLeft } from './award/brasilia';
+import type { Phase } from './award/phases';
+
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
 export const strings = {
   appName: 'Paçoca AUwards',
   genericError: 'Algo deu errado. Tenta de novo?',
@@ -25,13 +30,43 @@ export const strings = {
     home: 'Início',
     members: 'Membros',
     invites: 'Convites',
+    calendar: 'Calendário',
     signOut: 'Sair',
   },
 
+  phases: {
+    collection: 'Coleta',
+    registration: 'Registro de indicações',
+    open: 'Indicações abertas',
+    voting: 'Votação',
+    announcement: 'Anúncio',
+  } satisfies Record<Phase, string>,
+
+  /** "Fase 1: Coleta", or just "Anúncio". */
+  phaseTitle: (number: number | null, name: string) => (number ? `Fase ${number}: ${name}` : name),
+
   home: {
-    greeting: (greeting: string, name: string) => `${greeting}, ${name}!`,
+    hello: (name: string) => `Oi, ${name}!`,
+    endsAt: (when: string) => `Termina em ${when}, horário de Brasília.`,
+    timeLeft: ({ days, hours, minutes }: TimeLeft) => {
+      if (days > 0) return `Faltam ${plural(days, 'dia', 'dias')} e ${plural(hours, 'hora', 'horas')}.`;
+      if (hours > 0) return `Faltam ${plural(hours, 'hora', 'horas')} e ${plural(minutes, 'minuto', 'minutos')}.`;
+      return minutes > 0 ? `Faltam ${plural(minutes, 'minuto', 'minutos')}.` : 'Falta menos de um minuto.';
+    },
+    ending: 'Esta fase está terminando. A próxima começa em instantes.',
+    noEnd: 'O Organizador ainda não marcou quando esta fase termina.',
     nameLabel: 'Meu nome',
     save: 'Salvar',
+  },
+
+  calendar: {
+    title: 'Calendário',
+    intro: 'Quando cada fase termina, no horário de Brasília. A seguinte começa sozinha.',
+    endOf: (phase: string) => `Fim da ${phase}`,
+    ended: 'Já terminou.',
+    save: 'Salvar calendário',
+    saved: 'Calendário salvo.',
+    invalid: 'As datas precisam estar no futuro e em ordem, cada fase terminando depois da anterior.',
   },
 
   invites: {

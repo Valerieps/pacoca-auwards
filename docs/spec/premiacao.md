@@ -19,6 +19,9 @@ anuncia os vencedores.
 - Cada ano tem uma edição, como "Paçoca AUwards 2026", com o seu próprio calendário. *(1)*
 - O app nasce com a edição de 2026 na Fase 1. *(1)*
 - Só o Cesar define o calendário: a data e a hora em que cada fase termina. *(1)*
+- Uma fase sem data de fim não termina. O Cesar marca e muda as datas quando quiser, desde que
+  fiquem no futuro e em ordem, cada fase terminando depois da anterior. A data de uma fase que já
+  terminou não muda mais. *(1)*
 - Cada fase termina sozinha na data e na hora programadas, e a seguinte começa. As horas são no
   horário de Brasília, sem opção de outro fuso. *(1)*
 - A tela de início mostra a fase atual e quanto falta para ela terminar. *(1)*
