@@ -92,6 +92,7 @@ describe('security rules', () => {
     const config = read(join(__dirname, '..', 'wrangler.jsonc'));
     expect(config).not.toMatch(/GOOGLE_CLIENT_SECRET"\s*:/);
     expect(config).not.toMatch(/BOOTSTRAP_ADMIN_EMAILS"\s*:/);
+    expect(config).not.toMatch(/TMDB_API_KEY"\s*:/);
   });
 
   it('allowed origins are bare https origins', () => {

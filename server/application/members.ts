@@ -65,10 +65,18 @@ export type SignInResult = { ok: true; memberId: string } | { ok: false; error: 
 
 /**
  * Lets a Google account in when it is an active member or has a pending invite. With no admin
- * at all (a brand-new group), the e-mails in `bootstrapAdminEmails` enter as admins.
+ * at all (a brand-new group), the e-mails in `bootstrapAdminEmails` enter as admins. `inPede` says
+ * Pede pra Paçoca knows the e-mail: someone new then enters as a participant without an invite
+ * (ADR-009).
  * Nothing is created for anyone else.
  */
-export function signIn(ctx: Context, profile: GoogleProfile, sessionHash: string, bootstrapAdminEmails: readonly string[]): SignInResult {
+export function signIn(
+  ctx: Context,
+  profile: GoogleProfile,
+  sessionHash: string,
+  bootstrapAdminEmails: readonly string[],
+  inPede = false,
+): SignInResult {
   const email = normalizeEmail(profile.email);
   const at = nowIso(ctx);
   return ctx.sql.transaction(() => {
@@ -86,7 +94,8 @@ export function signIn(ctx: Context, profile: GoogleProfile, sessionHash: string
     } else {
       const [invite] = ctx.sql.all<{ email: string }>("SELECT email FROM invites WHERE email = ? AND state = 'pending'", email);
       const bootstrap = activeAdminIds(ctx).length === 0 && bootstrapAdminEmails.map(normalizeEmail).includes(email);
-      if (!invite && !bootstrap) return { ok: false, error: 'no_invite' } as const;
+      // Pede pra Paçoca lets in only someone new: a member an admin removed needs a new invite.
+      if (!invite && !bootstrap && (row || !inPede)) return { ok: false, error: 'no_invite' } as const;
       const roles: Role[] = bootstrap ? ['admin'] : [];
 
       if (row) {

@@ -1,16 +1,17 @@
 import { useEffect } from 'react';
 import type { MeView } from '../application/api-contract';
-import { canManageGroup } from '../domain/group/roles';
+import { canManageGroup, isOrganizer } from '../domain/group/roles';
 import { strings } from '../domain/strings';
 import { useLiveStatus, useServices } from './backend-context';
 import { Link, navigate, usePath } from './router';
+import { Calendar } from './screens/Calendar';
 import { Home } from './screens/Home';
 import { Invites } from './screens/Invites';
 import { Members } from './screens/Members';
 import { SignIn } from './screens/SignIn';
 import { useQuery } from './use-query';
 
-/** The app's screens. Replace Home with the app's first real screen (BOOTSTRAP.md). */
+/** The app's screens. */
 export function App() {
   const { backend, live } = useServices();
   const me = useQuery('me', {}, ['me']);
@@ -58,6 +59,7 @@ function Navigation({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
     { path: '/', label: strings.nav.home },
     { path: '/membros', label: strings.nav.members },
     ...(canManageGroup(me) ? [{ path: '/convites', label: strings.nav.invites }] : []),
+    ...(isOrganizer(me) ? [{ path: '/calendario', label: strings.nav.calendar }] : []),
   ];
   return (
     <nav className="row tabs" aria-label={strings.nav.main}>
@@ -88,5 +90,6 @@ function Screen({ me }: { me: MeView }) {
   const path = usePath();
   if (path === '/membros') return <Members me={me} />;
   if (path === '/convites' && canManageGroup(me)) return <Invites />;
+  if (path === '/calendario' && isOrganizer(me)) return <Calendar />;
   return <Home me={me} />;
 }

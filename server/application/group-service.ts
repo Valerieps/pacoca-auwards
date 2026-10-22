@@ -1,7 +1,8 @@
 // The single entry to the group's data. The Durable Object calls it; every method is synchronous,
 // so a command runs alone and inside one transaction (ADR-004).
-import type { ApiResult, CommandName, Commands, QueryName, Queries, Topic } from '../../src/application/api-contract';
+import type { ApiResult, CommandName, Commands, GroupQueryName, Queries, Topic } from '../../src/application/api-contract';
 import { failure, QueryError, type CommandResult, type Context } from './context';
+import { advancePhase, currentEdition, setCalendar } from './edition';
 import { createInvite, listInvites, revokeInvite } from './invites';
 import {
   listMembers,
@@ -23,11 +24,15 @@ type Input = Record<string, unknown>;
 
 type Handler<T> = (ctx: Context, actor: Member, input: Input) => T;
 
-/** Every query the API answers. A handler returns null when the actor may not see it. */
-const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | null> } = {
+/**
+ * Every query the group answers (the Worker answers the ones that call other servers, ADR-010).
+ * A handler returns null when the actor may not see it.
+ */
+const QUERIES: { [N in GroupQueryName]: Handler<Queries[N]['output'] | QueryError | null> } = {
   me: (_ctx, actor) => me(actor),
   members: (ctx, actor) => listMembers(ctx, actor),
   invites: (ctx, actor) => listInvites(ctx, actor),
+  edition: (ctx) => currentEdition(ctx),
 };
 
 /** Every command the API runs; each checks the actor's role itself. */
@@ -37,6 +42,7 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'member.setRoles': setRoles,
   'member.remove': removeMember,
   'member.rename': rename,
+  'edition.setCalendar': setCalendar,
 };
 
 export class GroupService {
@@ -50,8 +56,8 @@ export class GroupService {
     migrate(this.ctx.sql);
   }
 
-  signIn(profile: GoogleProfile, sessionHash: string, bootstrapAdminEmails: readonly string[]): SignInResult {
-    return signIn(this.ctx, profile, sessionHash, bootstrapAdminEmails);
+  signIn(profile: GoogleProfile, sessionHash: string, bootstrapAdminEmails: readonly string[], inPede = false): SignInResult {
+    return signIn(this.ctx, profile, sessionHash, bootstrapAdminEmails, inPede);
   }
 
   signOut(sessionHash: string): void {
@@ -65,7 +71,7 @@ export class GroupService {
   query(sessionHash: string, name: string, input: unknown): ApiResult<unknown> {
     const actor = this.memberForSession(sessionHash);
     if (!actor) return failure('unauthenticated');
-    const handler = Object.hasOwn(QUERIES, name) ? QUERIES[name as QueryName] : undefined;
+    const handler = Object.hasOwn(QUERIES, name) ? QUERIES[name as GroupQueryName] : undefined;
     if (!handler) return failure('not_found');
     const value = handler(this.ctx, actor, asInput(input));
     if (value instanceof QueryError) return failure(value.error);
@@ -85,8 +91,10 @@ export class GroupService {
    * whether it is due). Returns the topics that changed, for the open apps.
    */
   tick(): Topic[] {
-    this.ctx.sql.run('DELETE FROM sessions WHERE expires_at <= ?', this.ctx.clock.now().toISOString());
-    return [];
+    return this.ctx.sql.transaction(() => {
+      this.ctx.sql.run('DELETE FROM sessions WHERE expires_at <= ?', this.ctx.clock.now().toISOString());
+      return advancePhase(this.ctx) ? ['edition'] : [];
+    });
   }
 }
 

@@ -17,7 +17,7 @@ o ano inteiro, com ou sem premiação acontecendo.
 - Eu adiciono uma mídia buscando pelo título no TMDB ou colando um link do TMDB ou do IMDb. Pôster,
   tipo (filme ou série), data de lançamento e temporadas vêm preenchidos. *(1)*
 - Numa série, cada temporada é um item. Quando eu adiciono uma série, escolho uma ou mais
-  temporadas. *(1)*
+  temporadas. Os "Especiais" do TMDB não aparecem como temporada. *(1)*
 - Um item é o mesmo quando é o mesmo filme, ou a mesma temporada da mesma série, no TMDB. A lista
   nunca tem o mesmo item duas vezes. *(1)*
   Por quê: título muda de grafia ("Duna 2", "Duna: Parte Dois"); o filme no TMDB não.

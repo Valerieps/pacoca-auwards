@@ -19,8 +19,13 @@ export class Group extends DurableObject<Env> {
     void ctx.blockConcurrencyWhile(async () => this.service.migrate());
   }
 
-  signIn(profile: GoogleProfile, sessionHash: string, bootstrapAdminEmails: string[]): SignInResult {
-    return this.service.signIn(profile, sessionHash, bootstrapAdminEmails);
+  signIn(profile: GoogleProfile, sessionHash: string, bootstrapAdminEmails: string[], inPede: boolean): SignInResult {
+    return this.service.signIn(profile, sessionHash, bootstrapAdminEmails, inPede);
+  }
+
+  /** Who a session belongs to, for the queries the Worker answers itself (ADR-010). */
+  sessionEmail(sessionHash: string): string | null {
+    return this.service.memberForSession(sessionHash)?.email ?? null;
   }
 
   signOut(sessionHash: string): void {

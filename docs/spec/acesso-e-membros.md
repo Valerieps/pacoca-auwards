@@ -15,6 +15,8 @@ Nada em aberto por enquanto.
 - Só entra quem tem convite para o e-mail da conta Google, ou quem está no grupo do Pede pra
   Paçoca com esse e-mail. Com outro e-mail, o app avisa que não há convite e não cria a conta. *(1)*
 - Quem entrou pelo Pede pra Paçoca e depois sai de lá continua no AUwards. *(1)*
+- Quem o admin removeu não volta pelo Pede pra Paçoca: só com um convite novo. *(1)*
+  Por quê: senão remover alguém que está no Pede pra Paçoca não teria efeito.
 - Os primeiros admins entram sem convite, pelos e-mails configurados no servidor, só enquanto o
   grupo não tem nenhum admin. *(1)*
 - Eu continuo conectada por 180 dias, até sair. *(1)*

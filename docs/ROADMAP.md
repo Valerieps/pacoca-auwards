@@ -11,19 +11,17 @@ O que ainda não está pronto.
 
 | Feature | Entrega | Spec | Observação |
 | --- | --- | --- | --- |
-| Entrada de quem está no Pede pra Paçoca | 1 | `spec/acesso-e-membros.md` | Service Binding com `isMember` (ADR-009); precisa da mudança no repositório do Pede pra Paçoca |
-| Minha lista: adicionar pelo TMDB, estados, nota, datas, filtros, arquivar | 1 | `spec/minha-lista.md` | ADR-008 |
+| Entrada de quem está no Pede pra Paçoca | 1 | `spec/acesso-e-membros.md` | O lado do AUwards está pronto; falta o `isMember` no repositório do Pede pra Paçoca e o binding `PEDE` no `wrangler.jsonc` (ADR-009) |
+| Minha lista: adicionar pelo TMDB, estados, nota, datas, filtros, arquivar | 1 | `spec/minha-lista.md` | A busca no TMDB já existe (`catalog.*`, ADR-010); faltam as tabelas `media` e `list_items` e as telas |
 | Indicação provisória | 1 | `spec/minha-lista.md` | |
-| Trazer do Pede pra Paçoca | 1 | `spec/trazer-do-pede.md` | `watchedBy` no Pede pra Paçoca (ADR-009) |
-| Edição e calendário, nascendo na Fase 1 | 1 | `spec/premiacao.md` | A troca de fase pelo cron, no horário de Brasília |
-| Fases 2 e 3: registrar indicações, indicações abertas, categorias, sugestões | 2 | `spec/premiacao.md` | |
+| Trazer do Pede pra Paçoca | 1 | `spec/trazer-do-pede.md` | O adaptador e `pede.status` existem; falta `watchedBy` no Pede pra Paçoca (ADR-009) e o comando de trazer |
+| Fases 2 e 3: registrar indicações, indicações abertas, categorias, sugestões | 2 | `spec/premiacao.md` | O que a troca de fase causa entra em `advancePhase` |
 | Fase 4, apuração e anúncio | 3 | `spec/premiacao.md` | |
 | Camada social e notificações | 4 | `spec/camada-social.md` | Notificações pedem Web Push e um ADR |
 
 ## O código ainda não segue o spec
 
-- A tela de início ainda é a de exemplo do template (`Home` e `src/domain/greeting.ts`); sai quando
-  a minha lista existir.
+- Nada por enquanto.
 
 ## Adiado
 
@@ -40,3 +38,8 @@ O que ainda não está pronto.
   tela de membros (`spec/acesso-e-membros.md`).
 - [ ] Trazer do Pede pra Paçoca traz tudo, de qualquer ano, e os itens entram no estado Assisti
   (`spec/trazer-do-pede.md`).
+- [ ] Quem foi removido não volta pelo Pede pra Paçoca: só com um convite novo
+  (`spec/acesso-e-membros.md`).
+- [ ] O calendário: uma fase sem data de fim não termina; as datas ficam no futuro e em ordem; a
+  data de uma fase que já terminou não muda mais (`spec/premiacao.md`).
+- [ ] A busca de uma série não oferece a temporada 0 do TMDB ("Especiais") (`spec/minha-lista.md`).
