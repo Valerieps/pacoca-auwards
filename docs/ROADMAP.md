@@ -40,6 +40,7 @@ O que ainda não está pronto.
   (`spec/trazer-do-pede.md`).
 - [ ] Quem foi removido não volta pelo Pede pra Paçoca: só com um convite novo
   (`spec/acesso-e-membros.md`).
-- [ ] O calendário: uma fase sem data de fim não termina; as datas ficam no futuro e em ordem; a
-  data de uma fase que já terminou não muda mais (`spec/premiacao.md`).
+- [ ] O calendário: uma fase sem data de início começa no fim da anterior; uma sem data de fim não
+  termina; as datas que ainda vão chegar ficam no futuro e em ordem; as que já passaram não mudam
+  mais (`spec/premiacao.md`).
 - [ ] A busca de uma série não oferece a temporada 0 do TMDB ("Especiais") (`spec/minha-lista.md`).

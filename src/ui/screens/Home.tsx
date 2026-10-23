@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { EditionView, MeView } from '../../application/api-contract';
 import { formatBrasilia, timeLeft } from '../../domain/award/brasilia';
-import { phaseNumber } from '../../domain/award/phases';
+import { nextPhase, phaseNumber, type Phase } from '../../domain/award/phases';
 import { NAME_MAX_LENGTH } from '../../domain/group/profile';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
@@ -19,8 +19,8 @@ export function Home({ me }: { me: MeView }) {
   );
 }
 
-function phaseTitle(edition: EditionView): string {
-  return strings.phaseTitle(phaseNumber(edition.phase), strings.phases[edition.phase]);
+function phaseTitle(phase: Phase): string {
+  return strings.phaseTitle(phaseNumber(phase), strings.phases[phase]);
 }
 
 /** Re-renders every minute, so the countdown moves on its own. */
@@ -35,12 +35,24 @@ function useMinute(): Date {
 
 function EditionCard({ edition }: { edition: EditionView }) {
   const now = useMinute();
+  const next = nextPhase(edition.phase);
+  if (edition.ended && next) {
+    // The break between two phases: the next one always has a start, or it would have started.
+    const start = edition.startsAt[next];
+    return (
+      <div className="card stack">
+        <span className="muted">{edition.name}</span>
+        <strong>{strings.home.phaseEnded(phaseTitle(edition.phase))}</strong>
+        <span>{start ? strings.home.nextStartsAt(phaseTitle(next), formatBrasilia(start)) : strings.home.starting}</span>
+      </div>
+    );
+  }
   const end = edition.phase === 'announcement' ? undefined : edition.endsAt[edition.phase];
   const left = end ? timeLeft(end, now) : null;
   return (
     <div className="card stack">
       <span className="muted">{edition.name}</span>
-      <strong>{phaseTitle(edition)}</strong>
+      <strong>{phaseTitle(edition.phase)}</strong>
       {end ? (
         <>
           <span>{left ? strings.home.timeLeft(left) : strings.home.ending}</span>
