@@ -55,18 +55,28 @@ export const strings = {
     },
     ending: 'Esta fase está terminando. A próxima começa em instantes.',
     noEnd: 'O Organizador ainda não marcou quando esta fase termina.',
+    /** "Fase 1: Coleta terminou." in the break before the next phase. */
+    phaseEnded: (phase: string) => `${phase} terminou.`,
+    nextStartsAt: (phase: string, when: string) => `${phase} começa em ${when}, horário de Brasília.`,
+    starting: 'A próxima fase começa em instantes.',
     nameLabel: 'Meu nome',
     save: 'Salvar',
   },
 
   calendar: {
     title: 'Calendário',
-    intro: 'Quando cada fase termina, no horário de Brasília. A seguinte começa sozinha.',
-    endOf: (phase: string) => `Fim da ${phase}`,
+    intro:
+      'Quando cada fase começa e termina, no horário de Brasília. Uma fase sem data de início começa no fim da anterior; pode haver um intervalo entre as duas.',
+    start: 'Início',
+    end: 'Fim',
+    startNow: 'Iniciar agora',
+    startNowConfirm: (phase: string) => `Iniciar a ${phase} agora? A fase atual, se ainda estiver aberta, termina neste instante.`,
+    started: (phase: string) => `${phase} começou.`,
     ended: 'Já terminou.',
     save: 'Salvar calendário',
     saved: 'Calendário salvo.',
-    invalid: 'As datas precisam estar no futuro e em ordem, cada fase terminando depois da anterior.',
+    invalid:
+      'As datas precisam estar no futuro e em ordem: cada fase termina depois de começar e começa no fim da anterior ou depois dele.',
   },
 
   invites: {

@@ -18,13 +18,26 @@ anuncia os vencedores.
 
 - Cada ano tem uma edição, como "Paçoca AUwards 2026", com o seu próprio calendário. *(1)*
 - O app nasce com a edição de 2026 na Fase 1. *(1)*
-- Só o Cesar define o calendário: a data e a hora em que cada fase termina. *(1)*
-- Uma fase sem data de fim não termina. O Cesar marca e muda as datas quando quiser, desde que
-  fiquem no futuro e em ordem, cada fase terminando depois da anterior. A data de uma fase que já
-  terminou não muda mais. *(1)*
-- Cada fase termina sozinha na data e na hora programadas, e a seguinte começa. As horas são no
-  horário de Brasília, sem opção de outro fuso. *(1)*
-- A tela de início mostra a fase atual e quanto falta para ela terminar. *(1)*
+- Só o Cesar define o calendário: a data e a hora em que cada fase começa e termina. O Anúncio só
+  tem data de início. *(1)*
+- As fases seguem em ordem e não se sobrepõem: cada uma começa no fim da anterior ou depois dele.
+  Entre o fim de uma fase e o início da seguinte pode haver um intervalo. *(1)*
+- Uma fase sem data de início começa no fim da anterior. Uma fase sem data de fim não termina. *(1)*
+- O Cesar marca e muda as datas quando quiser, desde que as que ainda vão chegar fiquem no futuro e
+  em ordem. A data de algo que já aconteceu (o início de uma fase que já começou, o fim de uma que
+  já terminou) não muda mais. *(1)*
+- A Fase 1 de 2026 já começou: a data de início dela fica fixa. A partir de 2027 a Fase 1 ganha
+  data de início como as outras. *(1)*
+- Cada fase começa e termina sozinha na data e na hora programadas. As horas são no horário de
+  Brasília, sem opção de outro fuso. *(1)*
+- No calendário, a próxima fase tem o botão "Iniciar agora": ela começa no instante do clique, sem
+  esperar a data marcada. Se a fase atual ainda estiver aberta, ela termina nesse mesmo instante. O
+  botão só aparece na próxima fase: não dá para pular fases. *(1)*
+  Por quê: pular a Fase 2 obrigaria o app a registrar as indicações de todo mundo de uma vez.
+- No intervalo entre duas fases, a minha lista continua editável, mas as ações das fases ficam
+  fechadas: registrar indicações só na Fase 2, votar só na Fase 4. *(1)*
+- A tela de início mostra a fase atual e quanto falta para ela terminar; no intervalo, qual fase
+  vem e quando ela começa. *(1)*
 
 | Fase | Nome | O que acontece |
 | --- | --- | --- |

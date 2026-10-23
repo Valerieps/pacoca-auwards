@@ -42,6 +42,11 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     )`,
     `INSERT INTO editions (year, name, phase) VALUES (2026, 'Paçoca AUwards 2026', 'collection')`,
   ],
+  // 3: each phase also has a start, and there may be a break between two phases.
+  [
+    `ALTER TABLE editions ADD COLUMN phase_starts_at TEXT NOT NULL DEFAULT '{}'`,
+    `ALTER TABLE editions ADD COLUMN phase_ended INTEGER NOT NULL DEFAULT 0`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

@@ -164,7 +164,7 @@ describe('the edition', () => {
     const admin = signInAdmin();
     expect(service.query(admin, 'edition', {})).toEqual({
       ok: true,
-      value: { year: 2026, name: 'Paçoca AUwards 2026', phase: 'collection', endsAt: {} },
+      value: { year: 2026, name: 'Paçoca AUwards 2026', phase: 'collection', ended: false, startsAt: {}, endsAt: {} },
     });
   });
 
@@ -198,6 +198,47 @@ describe('the edition', () => {
     expect(service.tick()).toEqual([]);
     clock.set('2026-12-01T23:00:00Z');
     expect(service.tick()).toEqual(['edition']);
+    expect(service.query(cesar, 'edition', {})).toMatchObject({ ok: true, value: { phase: 'registration' } });
+    expect(service.tick()).toEqual([]);
+  });
+
+  it('takes starts too, and waits in the break until the next phase starts', () => {
+    const cesar = organizer();
+    expect(
+      service.command(cesar, 'edition.setCalendar', {
+        startsAt: { registration: '2026-12-10T20:00' },
+        endsAt: { collection: '2026-12-01T20:00' },
+      }),
+    ).toMatchObject({ ok: true, value: { startsAt: { registration: '2026-12-10T23:00:00.000Z' } } });
+    expect(service.command(cesar, 'edition.setCalendar', { startsAt: { registration: '2026-11-30T20:00' }, endsAt: { collection: '2026-12-01T20:00' } })).toEqual({
+      ok: false,
+      error: 'invalid',
+    });
+    clock.set('2026-12-02T00:00:00Z');
+    expect(service.tick()).toEqual(['edition']);
+    expect(service.query(cesar, 'edition', {})).toMatchObject({ ok: true, value: { phase: 'collection', ended: true } });
+    clock.set('2026-12-10T23:00:00Z');
+    expect(service.tick()).toEqual(['edition']);
+    expect(service.query(cesar, 'edition', {})).toMatchObject({ ok: true, value: { phase: 'registration', ended: false } });
+  });
+
+  it('starts the next phase now for the Organizador only, ending the current one', () => {
+    const admin = signInAdmin();
+    expect(service.command(admin, 'edition.startPhase', { phase: 'registration' })).toEqual({ ok: false, error: 'forbidden' });
+    const cesar = organizer(admin);
+    service.command(cesar, 'edition.setCalendar', { startsAt: { registration: '2026-12-10T20:00' }, endsAt: { collection: '2026-12-01T20:00' } });
+    expect(service.command(cesar, 'edition.startPhase', { phase: 'open' })).toEqual({ ok: false, error: 'invalid' });
+    expect(service.command(cesar, 'edition.startPhase', { phase: 'nope' })).toEqual({ ok: false, error: 'invalid' });
+    expect(service.command(cesar, 'edition.startPhase', { phase: 'registration' })).toMatchObject({
+      ok: true,
+      changed: ['edition'],
+      value: {
+        phase: 'registration',
+        ended: false,
+        startsAt: { registration: '2026-10-21T12:00:00.000Z' },
+        endsAt: { collection: '2026-10-21T12:00:00.000Z' },
+      },
+    });
     expect(service.query(cesar, 'edition', {})).toMatchObject({ ok: true, value: { phase: 'registration' } });
     expect(service.tick()).toEqual([]);
   });

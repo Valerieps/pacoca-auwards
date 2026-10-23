@@ -2,7 +2,7 @@
 // so a command runs alone and inside one transaction (ADR-004).
 import type { ApiResult, CommandName, Commands, GroupQueryName, Queries, Topic } from '../../src/application/api-contract';
 import { failure, QueryError, type CommandResult, type Context } from './context';
-import { advancePhase, currentEdition, setCalendar } from './edition';
+import { advancePhase, currentEdition, setCalendar, startPhase } from './edition';
 import { createInvite, listInvites, revokeInvite } from './invites';
 import {
   listMembers,
@@ -43,6 +43,7 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'member.remove': removeMember,
   'member.rename': rename,
   'edition.setCalendar': setCalendar,
+  'edition.startPhase': startPhase,
 };
 
 export class GroupService {

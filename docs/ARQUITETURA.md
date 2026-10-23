@@ -72,12 +72,13 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 | `media` | `media_type`, `tmdb_id`, `season`, `title`, `poster_path`, `release_date`, `release_date_manual` | Cópia do que veio do TMDB; chave única nos três primeiros. Desenho, ainda sem migração |
 | `list_items` | `member_id`, `media_id`, `state`, `rating`, `rating_edited`, `watched_at`, `watched_at_edited`, `from_pede`, `archived`, `wants_to_nominate`, `justification` | Um por membro e mídia. Desenho, ainda sem migração |
 | `pede_imports` | `member_id`, `last_at` | A última vez que o membro trouxe do Pede pra Paçoca. Desenho |
-| `editions` | `year`, `name`, `phase`, `phase_ends_at` (JSON, por fase, instantes UTC) | Uma por ano; a de 2026 nasce na migração 2, na Fase 1. A edição atual é a do maior ano; o cron troca a fase |
+| `editions` | `year`, `name`, `phase`, `phase_ended`, `phase_starts_at` e `phase_ends_at` (JSON, por fase, instantes UTC) | Uma por ano; a de 2026 nasce na migração 2, na Fase 1. A edição atual é a do maior ano. `phase` é a fase em andamento ou a última que andou; `phase_ended = 1` quando ela terminou e a seguinte ainda não começou (o intervalo). O cron troca a fase |
 
 ## Fluxo de eventos
 
-- **Troca de fase:** o cron (`GroupService.tick`) vê que a data de fim da fase passou, no horário
-  de Brasília, e avança a edição numa transação. Na mesma transação faz o que a troca pede: no fim
+- **Troca de fase:** o cron (`GroupService.tick`) vê que a data de fim da fase ou a de início da
+  seguinte passou, no horário de Brasília, e avança a edição numa transação. O comando
+  `edition.startPhase` ("Iniciar agora") faz o mesmo na hora, marcando as datas para o instante atual. Na mesma transação faz o que a troca pede: no fim
   da Fase 2 registra as indicações de quem não registrou; no fim da Fase 4 torna oficiais os votos
   provisórios. Depois avisa os apps abertos. Se o cron ficou parado e várias datas passaram, a
   edição avança todas de uma vez (`advancePhase`).

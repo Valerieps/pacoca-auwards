@@ -34,9 +34,13 @@ export interface InviteView {
 export interface EditionView {
   readonly year: number;
   readonly name: string;
+  /** The phase in progress, or, when `ended`, the last one, in the break before the next. */
   readonly phase: Phase;
+  readonly ended: boolean;
+  /** UTC ISO instants; a phase missing in `startsAt` starts when the one before it ends. */
+  readonly startsAt: Calendar['startsAt'];
   /** UTC ISO instants; a phase missing here has no end yet. */
-  readonly endsAt: Calendar;
+  readonly endsAt: Calendar['endsAt'];
 }
 
 /** A movie or series as TMDB has it (ADR-008). */
@@ -97,10 +101,18 @@ export interface Commands {
   'member.remove': { input: { memberId: string }; output: null };
   'member.rename': { input: { name: string }; output: MeView };
   /**
-   * Organizador only. Each end is "YYYY-MM-DDTHH:mm" in Brasília time, or null for none yet. The
-   * ends of phases that already ended stay as they were.
+   * Organizador only. Each date is "YYYY-MM-DDTHH:mm" in Brasília time, or null for none yet. The
+   * dates that already happened stay as they were.
    */
-  'edition.setCalendar': { input: { endsAt: Partial<Record<keyof Calendar, string | null>> }; output: EditionView };
+  'edition.setCalendar': {
+    input: {
+      startsAt: Partial<Record<keyof Calendar['startsAt'], string | null>>;
+      endsAt: Partial<Record<keyof Calendar['endsAt'], string | null>>;
+    };
+    output: EditionView;
+  };
+  /** Organizador only: "Iniciar agora". Only the next phase; the current one ends now. */
+  'edition.startPhase': { input: { phase: Phase }; output: EditionView };
 }
 
 export type QueryName = keyof Queries;
