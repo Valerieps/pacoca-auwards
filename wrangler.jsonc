@@ -20,15 +20,16 @@
   // One cron for every time-based job; each job decides whether it is due (GroupService.tick).
   "triggers": { "crons": ["*/5 * * * *"] },
   "vars": {
-    // Public: the OAuth client ID from Google Cloud (BOOTSTRAP.md). The secret is a secret.
-    "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com"
+    // Public: the OAuth client ID from Google Cloud. Set here, not in the dashboard: a deploy
+    // overwrites dashboard variables with these. The client secret is a secret.
+    "GOOGLE_CLIENT_ID": "625557632408-0rsie0euo04saggbktbfsoiandias8as.apps.googleusercontent.com"
   },
   // Branch previews (`wrangler preview`, ADR-004) refuse to deploy without this block. Each preview
   // gets its own empty Group namespace, never production's data; it has no secrets and no cron, and
   // Google sign-in does not work there (ADR-005), so the public client ID is enough.
   "previews": {
     "vars": {
-      "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com"
+      "GOOGLE_CLIENT_ID": "625557632408-0rsie0euo04saggbktbfsoiandias8as.apps.googleusercontent.com"
     },
     "durable_objects": {
       "bindings": [{ "name": "GROUP", "class_name": "Group" }]
